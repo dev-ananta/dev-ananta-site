@@ -1,0 +1,121 @@
+/* Components */
+
+/* Status dots */
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); flex: none; display: inline-block; }
+.dot--live { box-shadow: 0 0 0 0 var(--accent-soft); animation: pulse 2.4s var(--ease) infinite; }
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent); }
+  70%, 100% { box-shadow: 0 0 0 8px transparent; }
+}
+
+/* Buttons */
+.icon-btn {
+  display: inline-grid; place-items: center;
+  width: var(--target); height: var(--target); border-radius: 50%;
+  color: var(--muted); transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
+}
+.icon-btn:hover { color: var(--fg); background: var(--line); }
+.theme-icon { display: none; }
+.theme-icon--light { display: block; }
+html[data-theme="dark"] .theme-icon--light { display: none; }
+html[data-theme="dark"] .theme-icon--dark { display: block; }
+@media (prefers-color-scheme: dark) {
+  html:not([data-theme="light"]) .theme-icon--light { display: none; }
+  html:not([data-theme="light"]) .theme-icon--dark { display: block; }
+}
+
+.btn {
+  display: inline-flex; align-items: center; gap: 0.55rem;
+  min-height: var(--target); padding: 0 1.15rem;
+  border-radius: var(--radius-pill); border: 1px solid transparent;
+  font-size: var(--step--1); font-weight: 500; text-decoration: none;
+  transition: transform var(--dur) var(--ease), background-color var(--dur) var(--ease), border-color var(--dur) var(--ease);
+}
+.btn:active { transform: scale(0.98); }
+.btn--primary { background: var(--accent); color: var(--on-accent); }
+.btn--primary:hover { background: color-mix(in srgb, var(--accent) 88%, var(--fg)); }
+.btn--ghost { border-color: var(--line-strong); color: var(--fg); }
+.btn--ghost:hover { background: var(--line); }
+
+.link-accent {
+  display: inline-flex; align-items: center; min-height: var(--target);
+  color: var(--accent-ink); font-weight: 500; text-decoration: none;
+}
+.link-accent:hover { text-decoration: underline; }
+
+/* Contact (top of page when inverted, so it doubles as the primary CTA) */
+.contact__heading { font-size: var(--step-2); font-weight: 600; letter-spacing: -0.025em; line-height: 1.2; margin-bottom: 0.5rem; }
+.contact__actions { display: flex; flex-wrap: wrap; gap: 0.6rem; margin-top: 1.25rem; }
+
+/* Now list */
+.now-list li {
+  position: relative; padding: 0.55rem 0 0.55rem 1.25rem; border-bottom: 1px solid var(--line);
+}
+.now-list li::before {
+  content: ""; position: absolute; left: 0; top: 1.15em;
+  width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+}
+
+/* Experience rows */
+.rows { border-top: 1px solid var(--line); }
+.row {
+  display: grid; grid-template-columns: 1fr auto; gap: 0.15rem 1rem; align-items: baseline;
+  padding: 0.9rem 0; border-bottom: 1px solid var(--line);
+}
+.row__main { font-weight: 500; }
+.row__org { grid-column: 1; }
+.row__meta { grid-column: 2; grid-row: 1; text-align: right; white-space: nowrap; }
+@media (min-width: 640px) {
+  .row { grid-template-columns: 1.2fr 1fr auto; }
+  .row__org { grid-column: 2; grid-row: 1; }
+  .row__meta { grid-column: 3; }
+}
+
+/* Project cards */
+.cards { display: grid; gap: 0.75rem; grid-template-columns: 1fr; }
+@media (min-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
+
+.card {
+  display: flex; flex-direction: column; gap: 0.45rem; height: 100%;
+  padding: 1.1rem 1.15rem 1.2rem;
+  border: 1px solid var(--line); border-radius: var(--radius);
+  background: var(--bg-raised); color: inherit; text-decoration: none;
+  transition: border-color var(--dur) var(--ease), transform var(--dur) var(--ease), box-shadow var(--dur) var(--ease);
+}
+a.card:hover { border-color: var(--line-strong); transform: translateY(-2px); box-shadow: var(--shadow); }
+a.card:hover .card__arrow { color: var(--accent-ink); transform: translate(2px, -2px); }
+.card__top { display: flex; justify-content: space-between; margin-bottom: 1.25rem; }
+.card__title { font-size: var(--step-1); font-weight: 600; letter-spacing: -0.02em; display: flex; align-items: center; gap: 0.35rem; }
+.card__arrow { display: inline-flex; color: var(--muted); transition: transform var(--dur) var(--ease), color var(--dur) var(--ease); }
+.card__blurb { font-size: var(--step--1); line-height: 1.55; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: auto; padding-top: 0.6rem; }
+.tags li {
+  font-family: var(--font-mono); font-size: 0.72rem;
+  padding: 0.15rem 0.55rem; border-radius: var(--radius-pill);
+  border: 1px solid var(--line); color: var(--muted);
+}
+
+/* Hero (bottom of page when inverted: a sign-off) */
+.eyebrow { display: inline-flex; align-items: center; gap: 0.55rem; font-size: var(--step--1); color: var(--muted); margin-bottom: 1rem; }
+.hero__name { font-size: var(--step-3); font-weight: 650; letter-spacing: -0.035em; line-height: 1.08; margin-bottom: 1rem; }
+.hero__role { color: var(--muted); font-weight: 450; }
+.hero__headline { font-size: var(--step-1); font-weight: 500; letter-spacing: -0.015em; margin-bottom: 0.75rem; max-width: 34ch; }
+.hero__bio { max-width: 58ch; margin-bottom: 0.6rem; }
+.hero .link-accent { margin-top: 0.5rem; }
+
+/* 404 */
+.notfound { min-height: 70dvh; display: grid; align-items: center; }
+.notfound .btn { margin-top: 1.5rem; }
+
+/* Reveal: only hidden when JS is running and motion is allowed */
+.js-reveal .reveal { opacity: 0; transform: translateY(10px); transition: opacity 600ms var(--ease), transform 600ms var(--ease); }
+.js-reveal .reveal.is-in { opacity: 1; transform: none; }
+
+/* Segmented mode toggle — Document 4 (styles kept ready; component inactive) */
+.segmented { display: inline-flex; padding: 3px; border: 1px solid var(--line-strong); border-radius: var(--radius-pill); }
+.segmented__item {
+  display: inline-flex; align-items: center; min-height: 36px; padding-inline: 0.8rem;
+  border-radius: var(--radius-pill); font-size: var(--step--1); color: var(--muted); text-decoration: none;
+}
+.segmented__item[aria-current="page"] { background: var(--accent); color: var(--on-accent); }

@@ -1,0 +1,78 @@
+/* ==========================================================================
+   Design tokens
+   Document 3 (Colors): the reference's red accent is replaced with green.
+   Every accent use goes through --accent*, so this is the only place to tune it.
+   Contrast: --accent-ink on --bg ≥ 4.5:1 (WCAG AA) in both themes.
+   ========================================================================== */
+
+:root {
+  /* Neutrals: warm off-white paper, near-black ink */
+  --bg: #fafaf9;
+  --bg-raised: #ffffff;
+  --fg: #111312;
+  --muted: #5f6662;
+  --line: rgb(17 19 18 / 0.09);
+  --line-strong: rgb(17 19 18 / 0.16);
+
+  /* Accent — was red, now green (Document 3) */
+  --accent: #22a35a;        /* fills, dots, focus rings */
+  --accent-ink: #157a41;    /* text on light backgrounds (AA) */
+  --accent-soft: rgb(34 163 90 / 0.12);
+  --on-accent: #ffffff;
+
+  /* Type */
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "JetBrains Mono", Menlo, Consolas, monospace;
+  --step--1: clamp(0.78rem, 0.76rem + 0.1vw, 0.84rem);
+  --step-0: clamp(0.95rem, 0.92rem + 0.15vw, 1.03rem);
+  --step-1: clamp(1.15rem, 1.08rem + 0.35vw, 1.35rem);
+  --step-2: clamp(1.45rem, 1.3rem + 0.75vw, 1.9rem);
+  --step-3: clamp(1.9rem, 1.6rem + 1.5vw, 2.8rem);
+
+  /* Space and shape */
+  --wrap: 44rem;
+  --gutter: clamp(1.1rem, 4vw, 2rem);
+  --section-gap: clamp(3.5rem, 8vw, 6rem);
+  --radius: 14px;
+  --radius-pill: 999px;
+
+  /* Touch: Fitts's Law minimum target size */
+  --target: 44px;
+
+  /* Motion */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 220ms;
+
+  --dock-h: 60px;
+  --shadow: 0 1px 0 rgb(0 0 0 / 0.02), 0 8px 30px -12px rgb(0 0 0 / 0.18);
+}
+
+/* Dark theme: system preference, unless the user picked light explicitly. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0b0d0c;
+    --bg-raised: #131614;
+    --fg: #eef1ef;
+    --muted: #9aa39e;
+    --line: rgb(238 241 239 / 0.09);
+    --line-strong: rgb(238 241 239 / 0.18);
+    --accent: #3ecf7a;
+    --accent-ink: #4fdb89;
+    --accent-soft: rgb(62 207 122 / 0.14);
+    --on-accent: #06210f;
+    --shadow: 0 1px 0 rgb(255 255 255 / 0.03), 0 10px 30px -10px rgb(0 0 0 / 0.6);
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0b0d0c;
+  --bg-raised: #131614;
+  --fg: #eef1ef;
+  --muted: #9aa39e;
+  --line: rgb(238 241 239 / 0.09);
+  --line-strong: rgb(238 241 239 / 0.18);
+  --accent: #3ecf7a;
+  --accent-ink: #4fdb89;
+  --accent-soft: rgb(62 207 122 / 0.14);
+  --on-accent: #06210f;
+  --shadow: 0 1px 0 rgb(255 255 255 / 0.03), 0 10px 30px -10px rgb(0 0 0 / 0.6);
+}

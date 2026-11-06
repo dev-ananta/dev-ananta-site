@@ -1,0 +1,24 @@
+{
+  "name": "dev-ananta-site",
+  "version": "1.0.0",
+  "description": "Personal site for Anant Parikh: zero-dependency static build, deployed on Vercel.",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "author": "Anant Parikh",
+  "homepage": "https://dev-ananta.vercel.app",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YOUR_GITHUB_USERNAME/dev-ananta-site.git"
+  },
+  "engines": {
+    "node": ">=18.17"
+  },
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "build": "node scripts/build.mjs",
+    "build:personal": "echo 'Personal mode is disabled. See personal/README.md' && exit 1",
+    "preview": "npm run build && node scripts/dev.mjs",
+    "check": "node scripts/build.mjs && node scripts/check.mjs"
+  }
+}
