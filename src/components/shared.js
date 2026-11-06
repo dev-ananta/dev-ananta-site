@@ -1,4 +1,5 @@
 import { html, raw, extAttrs, ordered } from '../lib/html.js';
+import modeToggle from './modeToggle.js';
 
 /* ── Nav bar ───────────────────────────────────────────────────────────────
  * Reference: a thin row at the top of every page (logo left, links right).
@@ -32,6 +33,7 @@ export function footer({ site, nav, content, inv }) {
 
   const cols = html`
   <div class="footer__cols">
+    ${modeToggle({ current: 'professional' })}
     <ul class="footer__col">
       ${nav.map((n) => html`<li><a href="${n.href}">${n.label}</a></li>`)}
       <li class="footer__fine"><a href="/privacy">Privacy</a></li>

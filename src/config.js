@@ -6,12 +6,14 @@
 export const SITE = {
   name: 'Anant Parikh',
   logo: 'dev-ananta',
-  role: 'Developer',
+  role: 'Student Software Engineer',
   url: process.env.SITE_URL || 'https://dev-ananta.vercel.app',
-  description: 'Anant Parikh, a developer building fast, considered web experiences.',
+  description: 'Anant Parikh (Ananta): high school student software engineer. Full-stack apps, FIRST Robotics software and a student nonprofit.',
   locale: 'en-US',
-  location: ['Your City', 'Country'],   // TODO: shown in the home hero, two lines
-  email: 'hello@example.com',           // TODO: your public contact address
+  // Privacy: the owner is a minor. Only region-level location and one
+  // public email are ever published. No school name, address, phone or grades.
+  location: ['Midwest', 'United States'],
+  email: 'ananta.dev@proton.me',
   year: new Date().getFullYear(),
   // Cloudflare Turnstile is optional. Leave empty to skip the widget.
   turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || '',
@@ -52,10 +54,13 @@ export const LAYOUT = { invert: true };
 
 /**
  * MODE — Document 4 (Professional / Personal)
- * This build ships PROFESSIONAL mode only. Personal mode is scaffolded and
- * commented out. See personal/README.md.
+ * Both sides are built (folder strategy): Professional at "/", Personal
+ * (Persona 3 Reload–inspired) at "/personal". The toggle lives in the footer
+ * on Professional and in the menu on Personal. Set `personal: false` to ship
+ * Professional only.
  */
 export const MODE = {
-  current: 'professional',
-  // current: process.env.SITE_MODE === 'personal' ? 'personal' : 'professional',
+  personal: process.env.SITE_PERSONAL !== 'off',
+  professionalHref: '/',
+  personalHref: '/personal',
 };

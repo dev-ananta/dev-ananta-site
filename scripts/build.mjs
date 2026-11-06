@@ -23,28 +23,29 @@ const load = async (rel) => import(`${pathToFileURL(join(SRC, rel)).href}?t=${Da
 export async function build({ quiet = false } = {}) {
   const t0 = performance.now();
   const { MODE } = await load('config.js');
-  const { PAGES, renderDocument } = await load('page.js');
+  const { PAGES, renderDocument, PERSONAL_PAGES, renderPersonalDocument } = await load('page.js');
   const { html } = await load('lib/html.js');
 
-  /* ── Document 4: content source by mode ───────────────────────────────
-   * Professional is the only active mode. To enable Personal, uncomment
-   * this block and change `const content` to `let` (see personal/README.md).
-   */
   const content = (await load('content/professional.js')).default;
-  let outDir = OUT;
-  // if (MODE.current === 'personal') {
-  //   const personal = (await import(pathToFileURL(join(ROOT, 'personal/content.js')).href)).default;
-  //   if (!personal) throw new Error('personal/content.js is empty. Fill it in before building Personal mode.');
-  //   content = personal;
-  //   outDir = join(OUT, 'personal'); // folder strategy → served under /personal/
-  // }
-  void MODE;
-
-  if (outDir === OUT) await rm(OUT, { recursive: true, force: true });
+  const outDir = OUT;
+  await rm(OUT, { recursive: true, force: true });
   await mkdir(outDir, { recursive: true });
 
   for (const page of PAGES) {
     await writeFile(join(outDir, page.out), renderDocument(page, { content }));
+  }
+
+  /* ── Document 4: Personal side (folder strategy → /personal/*) ───────── */
+  if (MODE.personal) {
+    const personal = (await load('content/personal.js')).default;
+    await mkdir(join(OUT, 'personal'), { recursive: true });
+    for (const page of PERSONAL_PAGES) {
+      await writeFile(join(OUT, page.out), renderPersonalDocument(page, { content: personal }));
+    }
+    const pcss = ['tokens.css', 'base.css', 'motion.css', 'personal.css'];
+    await writeFile(join(OUT, 'personal.css'),
+      (await Promise.all(pcss.map((f) => readFile(join(SRC, 'styles', f), 'utf8')))).join('\n'));
+    await cp(join(SRC, 'client', 'personal.js'), join(OUT, 'personal.js'));
   }
 
   const notFound = { path: '/404', title: 'Not found', theme: 'legal', themeColor: '#ffffff' };
@@ -69,7 +70,8 @@ export async function build({ quiet = false } = {}) {
 
   if (!quiet) {
     const files = await readdir(OUT);
-    console.log(`✓ built ${PAGES.length} pages (${files.length} entries) → dist/ in ${Math.round(performance.now() - t0)}ms`);
+    const n = PAGES.length + (MODE.personal ? PERSONAL_PAGES.length : 0);
+    console.log(`✓ built ${n} pages (${files.length} entries) → dist/ in ${Math.round(performance.now() - t0)}ms`);
   }
 }
 

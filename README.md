@@ -17,7 +17,7 @@ dependency-free Vercel function.
 | **Doc 1: Reference** (reverse-engineered from a mobile recording) | Per-page palettes (brand / sky blue / black / stone grey / white), full-viewport hero with one-line display name and spinning asterisk, sticky hero reveal, photo with **pixel-dissolve** transition, four-column data tables, alternating left/right statements, pointer-reactive **dash field**, striped **page transitions**, giant footer year with **odometer roll** |
 | **Doc 2: Format** (top ↔ bottom) | `LAYOUT.invert` in `src/config.js`. Every page's stack is reversed, and so is each block's internal top/bottom arrangement. The footer (year + links) now opens every page, and the nav becomes a fixed bottom bar |
 | **Doc 3: Colors** (red → green) | `--brand: #00d65b` (was `#ff0000`) in `src/styles/tokens.css`: hero, transition stripes, theme-color, favicon, OG image |
-| **Doc 4: Professional / Personal** | Ships Professional only. The Personal loader, toggle and client hook are written but **commented out**. See [`personal/README.md`](personal/README.md) |
+| **Doc 4: Professional / Personal** | **Both sides are live.** Professional at `/`, and a Persona 3 Reload–inspired Personal side at `/personal` with a rotating 12-clip background library. The Professional/Personal toggle sits in the footer. See [`personal/README.md`](personal/README.md) |
 
 ### Layout order (Document 2)
 
@@ -50,7 +50,7 @@ The brief asks for Terms/Privacy pages only for commercial, SaaS or e-commerce
 products. This is a personal portfolio, so there are **no Terms of Service**. It does
 collect names and emails through the contact form, though, so it includes a
 professionally structured **Privacy notice** at `/privacy` (linked from the footer and
-the form, as in the reference). Fill in its TODOs. It's a template, not legal advice.
+the form, as in the reference). It names your real providers (Vercel, Resend, optional Cloudflare). Review it before launch. It is not legal advice.
 
 ---
 
@@ -64,7 +64,9 @@ dev-ananta-site/
 │   ├── config.js              # SITE, NAV, LAYOUT (Doc 2), MODE (Doc 4)
 │   ├── page.js                # page definitions, layout inversion, HTML shell
 │   ├── content/
-│   │   └── professional.js    # all copy and data, no markup
+│   │   ├── professional.js    # professional copy and data
+│   │   ├── personal.js        # Persona-side copy and data
+│   │   └── clips.js           # P3R clip library + per-page pools
 │   ├── components/
 │   │   ├── shared.js          # nav bar, footer + odometer, data table, asterisk
 │   │   ├── home.js            # hero, statement, photo, work preview
@@ -72,14 +74,17 @@ dev-ananta-site/
 │   │   ├── projects.js        # intro, image grid, table
 │   │   ├── contact.js         # form (progressive enhancement)
 │   │   ├── privacy.js         # privacy notice
-│   │   └── modeToggle.js      # Doc 4, commented out
+│   │   ├── personal.js        # Persona screens: menu, status, resume, requests, party
+│   │   └── modeToggle.js      # Professional / Personal toggle
 │   ├── lib/html.js            # auto-escaping template tag + ordered()
 │   ├── client/main.js         # transitions, nav ink, odometer, dissolve, dash field, form
+│   ├── client/personal.js     # clip director, keyboard menu, resume tabs, pause control
 │   └── styles/                # tokens → base → layout → components → motion
-├── personal/                  # Doc 4: inactive Personal variant
+├── personal/README.md         # Doc 4: how the Personal side works
 ├── public/
-│   ├── fonts/                 # Inter (self-hosted, Latin subset, OFL)
-│   ├── images/                # placeholder portrait + project art (replace)
+│   ├── fonts/                 # Inter, Anton, Bebas Neue (self-hosted subsets, OFL)
+│   ├── images/                # portrait, avatar, banner, project covers
+│   ├── media/p3r/             # 12 P3R clips + posters (≈5 MB)
 │   └── favicon.svg, og.png, robots.txt, sitemap.xml
 ├── scripts/
 │   ├── build.mjs              # src → dist/
@@ -118,10 +123,11 @@ Vercel CLI: `npx vercel dev`.
 
 | What | Where |
 |---|---|
-| Name, role, location, email | `SITE` in `src/config.js` |
-| All copy, projects, roles, socials | `src/content/professional.js` (search for `TODO`) |
-| Photo | Add `public/images/portrait.jpg` (≈1200×1500) and update `home.photo.src` |
-| Project images | `public/images/project-*.svg` → your images (4:5 crops look best) |
+| Name, role, location, email | `SITE` in `src/config.js` (keep the privacy rules below) |
+| All copy, projects, roles, socials | `src/content/professional.js` |
+| Home photo | `public/images/portrait.jpg` (cropped from your LinkedIn banner art) |
+| Project covers | `public/images/projects/*.svg` (typographic covers; swap in screenshots any time) |
+| Personal side | `src/content/personal.js`, `src/content/clips.js` |
 | Brand colour | `--brand` in `src/styles/tokens.css` (also `themeColor` for Home in `src/page.js`) |
 | Page colours | `--about`, `--black`, `--stone`, `--dark`, `--paper` in `tokens.css` |
 | Layout direction | `LAYOUT.invert` in `src/config.js` |
@@ -201,16 +207,26 @@ except Cloudflare Turnstile, and exactly one inline script (the pre-paint snippe
 
 ---
 
-## Personal mode (Document 4)
+## Personal side (Document 4)
 
-Disabled by design. [`personal/README.md`](personal/README.md) covers both strategies:
-**folder** (`/personal/` on the same deployment) and **branch** (a `personal` branch with
-its own Vercel domain).
+`/personal` is "Ananta's Persona", a Persona 3 Reload–inspired menu with About
+(status and Social Stats), Resume (cards and Social Links), Side Projects
+(Requests) and Socials (party). Background clips rotate least-shown-first, so
+no clip gets over-used. Details are in [`personal/README.md`](personal/README.md).
+Persona 3 Reload footage © ATLUS © SEGA. Fan tribute, not affiliated.
+
+## Privacy (the site owner is a minor)
+
+- The only contact published is **ananta.dev@proton.me**.
+- No phone number, home address, town, school name, grades or transcript data appear anywhere. Location is shown only as "Midwest, United States".
+- `npm run check` includes a **privacy guard** that fails the build if a phone number, the old personal or school email addresses, the home street or town, a school name, or any email other than the public one appears in the built site.
+- Personal social accounts (Instagram, Discord, YouTube) are deliberately left off. Add them in `src/content/*.js` only if you decide to.
 
 ---
 
 ## Credits and license
 
 - Code: [MIT](LICENSE) © 2026 Anant Parikh
-- Typeface: [Inter](https://github.com/rsms/inter) by Rasmus Andersson, SIL Open Font License 1.1 (`public/fonts/OFL.txt`)
-- Layout and interaction patterns inspired by [aryan.am](https://aryan.am). All copy and imagery here are original placeholders.
+- Typefaces: [Inter](https://github.com/rsms/inter), [Anton](https://github.com/googlefonts/AntonFont) and [Bebas Neue](https://github.com/dharmatype/Bebas-Neue), SIL Open Font License 1.1 (`public/fonts/OFL.txt`)
+- Persona 3 Reload footage © ATLUS © SEGA (fan tribute on the Personal side, not covered by the MIT license)
+- Layout and interaction patterns inspired by [aryan.am](https://aryan.am). All copy is original. Illustrations are the owner's own profile art.

@@ -1,11 +1,12 @@
 import { html, raw } from './lib/html.js';
-import { SITE, NAV, LAYOUT } from './config.js';
+import { SITE, NAV, LAYOUT, MODE } from './config.js';
 import { navBar, footer } from './components/shared.js';
 import * as home from './components/home.js';
 import * as about from './components/about.js';
 import * as projects from './components/projects.js';
 import { contactBlock } from './components/contact.js';
 import { privacyBlock } from './components/privacy.js';
+import * as p3 from './components/personal.js';
 
 /**
  * Page definitions in REFERENCE order (top → bottom), excluding the shared
@@ -105,3 +106,53 @@ ${body ?? raw(renderBody(page, { content, site, layout }))}
 </html>
 `;
 }
+
+/* ── Personal side (Document 4) ───────────────────────────────────────────
+ * Persona 3 Reload–inspired pages under /personal. Built with the folder
+ * strategy when MODE.personal is on. Each page names its clip pool.
+ */
+export const PERSONAL_PAGES = [
+  { path: '/personal', out: 'personal.html', title: 'Ananta’s Persona', pool: 'menu', render: p3.menu, back: false },
+  { path: '/personal/about', out: 'personal/about.html', title: 'About me · Ananta’s Persona', pool: 'about', render: p3.about },
+  { path: '/personal/resume', out: 'personal/resume.html', title: 'Resume · Ananta’s Persona', pool: 'resume', render: p3.resume },
+  { path: '/personal/projects', out: 'personal/projects.html', title: 'Side projects · Ananta’s Persona', pool: 'projects', render: p3.projects },
+  { path: '/personal/socials', out: 'personal/socials.html', title: 'Socials · Ananta’s Persona', pool: 'socials', render: p3.socials },
+];
+
+export function renderPersonalDocument(page, { content, site = SITE }) {
+  const canonical = new URL(page.path, site.url).href;
+  const body = html`
+<a class="skip-link" href="#main">Skip to content</a>
+<div class="pt pt--p3" aria-hidden="true" data-pt>${raw('<i></i>'.repeat(3))}</div>
+${p3.stage(page.pool)}
+${page.render({ content, site })}
+${p3.chrome({ content, back: page.back !== false })}`;
+
+  return `<!doctype html>
+<html lang="en" data-side="personal" data-page="${page.pool}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>${page.title}</title>
+  <meta name="description" content="The personal side of ${site.name}’s site, inspired by Persona 3 Reload.">
+  <link rel="canonical" href="${canonical}">
+  <meta name="theme-color" content="#00184c">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="${page.title}">
+  <meta property="og:url" content="${canonical}">
+  <meta property="og:image" content="${new URL('/media/p3r/stance.jpg', site.url).href}">
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="preload" href="/fonts/Anton-Regular.woff" as="font" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="/personal.css">
+  <script>${PREPAINT}</script>
+  <script type="module" src="/main.js"></script>
+  <script type="module" src="/personal.js"></script>
+</head>
+<body>
+${body}
+</body>
+</html>
+`;
+}
+
+export const personalEnabled = () => MODE.personal;

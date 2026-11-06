@@ -208,7 +208,22 @@ html[data-layout="inverted"] .about-list { padding-top: clamp(2rem, 8vh, 5rem); 
 .notfound .display { max-width: 12ch; }
 .notfound .pill { align-self: flex-start; }
 
-/* Segmented mode toggle — Document 4 (styles ready; component inactive) */
-.segmented { display: inline-flex; gap: 2px; }
-.segmented__item { display: inline-flex; align-items: center; min-height: var(--target); padding-inline: 0.5rem; opacity: 0.55; }
-.segmented__item[aria-current="page"] { opacity: 1; text-decoration: underline; }
+/* Professional / Personal toggle — Document 4 */
+.segmented { display: inline-flex; gap: 2px; padding: 3px; border: 1px solid var(--hair); border-radius: 999px; }
+.segmented__item {
+  display: inline-flex; align-items: center; min-height: 34px; padding-inline: 0.9rem;
+  border-radius: 999px; font-size: var(--micro); font-weight: 500;
+  transition: background-color 200ms var(--ease), color 200ms var(--ease);
+}
+@media (pointer: coarse) { .segmented__item { min-height: var(--target); } }
+.segmented__item:hover { text-decoration: none; background: var(--brand); color: var(--brand-ink); }
+.segmented__item[aria-current="page"] { background: var(--ink); color: var(--ink-inv); }
+.footer__mode { grid-column: 1 / -1; justify-self: start; margin-bottom: 0.75rem; }
+
+/* About › experience on phones: drop the link column, give names room */
+@media (max-width: 759px) {
+  .about__row--table .dtable__link { display: none; }
+  .about__row--table .dtable__year { width: 12%; }
+  .about__row--table .dtable__name { width: 58%; }
+  .about__row--table .dtable__tag { width: 30%; }
+}

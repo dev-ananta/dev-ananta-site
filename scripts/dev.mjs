@@ -18,6 +18,7 @@ const TYPES = {
   '.js': 'text/javascript; charset=utf-8', '.svg': 'image/svg+xml', '.png': 'image/png',
   '.ico': 'image/x-icon', '.txt': 'text/plain; charset=utf-8', '.json': 'application/json',
   '.webmanifest': 'application/manifest+json',
+  '.mp4': 'video/mp4', '.jpg': 'image/jpeg', '.woff': 'font/woff',
 };
 
 await build();
@@ -45,13 +46,14 @@ createServer(async (req, res) => {
     return res.end(JSON.stringify({ ok: false, error: 'API runs on Vercel. Use `vercel dev` locally' }));
   }
   const url = new URL(req.url, 'http://x');
-  let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
-  let file = join(DIST, p);
-  try {
-    if ((await stat(file)).isDirectory()) file = join(file, 'index.html');
-  } catch {
-    file = join(DIST, p + '.html'); // emulate Vercel cleanUrls
-  }
+  const p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '').replace(/\/$/, '') || '/';
+  // Resolve like Vercel cleanUrls: exact file → path.html → path/index.html
+  const tryFile = async (f) => { try { return (await stat(f)).isFile() ? f : null; } catch { return null; } };
+  const file = (p === '/' ? await tryFile(join(DIST, 'index.html')) : null)
+    || await tryFile(join(DIST, p))
+    || await tryFile(join(DIST, p + '.html'))
+    || await tryFile(join(DIST, p, 'index.html'))
+    || join(DIST, '__missing__');
   try {
     const body = await readFile(file);
     res.writeHead(200, { ...vercelHeaders, 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
