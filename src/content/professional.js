@@ -1,74 +1,66 @@
 /**
  * Professional-mode content. Pure data, no markup.
- * Every TODO is a placeholder to replace with real details before launch.
+ * Everything marked TODO is a placeholder. Swap in your own words and work.
  */
 
+const projects = [
+  // year groups the table rows; `image` is used by the Projects grid
+  { year: '26', name: 'Project One', url: 'project-one.vercel.app', category: 'Fullstack', image: '/images/project-1.svg', featured: true },
+  { year: '26', name: 'Project Two', url: 'project-two.vercel.app', category: 'Design', image: '/images/project-2.svg', featured: true },
+  { year: '26', name: 'Project Three', url: 'project-three.vercel.app', category: 'Realtime', image: '/images/project-3.svg', featured: true },
+  { year: '26', name: 'Project Four', url: 'project-four.vercel.app', category: 'Utility', image: '/images/project-4.svg' },
+  { year: '25', name: 'Project Five', url: 'project-five.vercel.app', category: 'Social', image: '/images/project-5.svg', featured: true },
+  { year: '25', name: 'Project Six', url: 'github.com', category: 'Hardware', image: '/images/project-6.svg' },
+];
+
 export default {
-  hero: {
-    eyebrow: 'Available for select work — 2026',
-    headline: 'I design and build software that feels considered.',
-    bio: [
-      'I’m a developer working across the front end: interfaces, interaction, and the systems underneath them.',
-      'I care about the small details that make a product feel fast, obvious and trustworthy.', // TODO: personalise
-    ],
-    cta: { label: 'See selected work', href: '#projects' },
+  home: {
+    intro: 'A curious, detail-driven developer working across web development, interface design and creative coding.', // TODO
+    statement: 'I build fast, accessible web applications where careful engineering meets clear, considered design.', // TODO
+    photo: { src: '/images/portrait.svg', alt: 'Placeholder for a portrait of Anant at work' }, // TODO: add your photo
+    work: {
+      lead: 'Every project starts as a question. It gets shaped through iteration until it feels obvious.', // TODO
+      cta: { label: 'View all projects', href: '/projects' },
+    },
   },
 
-  projects: [
-    // TODO: replace with real projects. `year`, `tags` and `href` are optional.
-    {
-      title: 'Project One',
-      blurb: 'A short, outcome-focused sentence about what this does and why it matters.',
-      year: '2026',
-      tags: ['TypeScript', 'React'],
-      href: 'https://github.com/',
-    },
-    {
-      title: 'Project Two',
-      blurb: 'Lead with the problem it solves, then the interesting technical choice.',
-      year: '2026',
-      tags: ['Design', 'Motion'],
-      href: 'https://github.com/',
-    },
-    {
-      title: 'Project Three',
-      blurb: 'One line keeps the grid scannable. Put the depth on the project page.',
-      year: '2025',
-      tags: ['Node', 'Edge'],
-      href: 'https://github.com/',
-    },
-    {
-      title: 'Project Four',
-      blurb: 'Hardware, tools, games: anything that shows how you think.',
-      year: '2025',
-      tags: ['Hardware'],
-      href: 'https://github.com/',
-    },
-  ],
+  about: {
+    headline: 'I build things because making them is how I make sense of them.', // TODO
+    statements: [
+      // `align` alternates left/right like the reference
+      { text: 'Most of what I know, I learned by building something and breaking it.', align: 'left' },
+      { text: 'I like making things of every kind: websites, tools, interfaces, small experiments.', align: 'right' },
+      { type: 'experience' },
+      { text: 'I love watching an idea go from nothing to something people actually use.', align: 'left' },
+      { text: 'I get to work on real projects with people whose work I care about.', align: 'right' },
+      { text: 'Creating is the most fun I know of. There’s always one more thing to try.', align: 'left' },
+    ],
+    experience: [
+      // TODO: real roles, most recent first
+      { year: '26', role: 'Software Developer', org: 'Company Name', url: 'company.com', period: 'Jan 2026 – Present' },
+      { year: '', role: 'Frontend Engineer, Intern', org: 'Studio Name', url: 'studio.com', period: 'May 2025 – Dec 2025' },
+      { year: '25', role: 'Founder', org: 'Side Project', url: 'side-project.vercel.app', period: 'Jan 2025 – Apr 2025' },
+    ],
+  },
 
-  experience: [
-    // TODO: replace with real roles, most recent first.
-    { role: 'Software Developer', org: 'Company Name', period: '2025 — Now', href: '' },
-    { role: 'Frontend Intern', org: 'Company Name', period: '2024 — 2025', href: '' },
-    { role: 'Freelance', org: 'Independent', period: '2023 — 2024', href: '' },
-  ],
-
-  now: [
-    // A short "what I'm doing now" list.
-    'Building this site in the open',
-    'Learning more about interaction design',
-    'Reading about design systems',
-  ],
+  projects: {
+    headline: 'The things I build start as problems I want solved, then grow into full projects.', // TODO
+    items: projects,
+  },
 
   contact: {
-    heading: 'Let’s build something.',
-    note: 'The fastest way to reach me is email. I usually reply within two days.',
+    headline: 'Tell me what you’re building, and let’s figure out the rest together.',
+    fields: {
+      name: { label: 'Full name', placeholder: 'Your name' },
+      email: { label: 'Email address', placeholder: 'you@example.com' },
+      message: { label: 'What are you working on?', placeholder: 'I’m working on…' },
+    },
+    submit: 'Send message',
   },
 
   socials: [
-    // TODO: point these at your real profiles.
+    // TODO: real profiles. The first footer column also shows the email.
     { label: 'GitHub', href: 'https://github.com/' },
     { label: 'LinkedIn', href: 'https://www.linkedin.com/' },
-    { label: 'X', href: 'https://x.com/' },
   ],
 };

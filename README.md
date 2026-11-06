@@ -2,48 +2,55 @@
 
 Personal site for **Anant Parikh**, live at **[dev-ananta.vercel.app](https://dev-ananta.vercel.app)**.
 
-It's a minimal, design-engineer-style portfolio with zero runtime dependencies.
-Pages are rendered to static HTML at build time with plain Node, and a ~3 KB
-client script adds the interactive parts. No framework, no `node_modules`,
-nothing to keep patched.
+It's a bold, Swiss-style, multi-page portfolio: Home, About, Projects, Work with me,
+and Privacy. Pages are rendered to static HTML at build time with plain Node, and one
+small client script adds the motion. There are **zero npm dependencies**, so there's
+nothing to install and nothing to keep patched. The contact form runs on a
+dependency-free Vercel function.
 
 ---
 
 ## How the brief maps to the code
 
-| Brief | Where it lives |
+| Brief | Implementation |
 |---|---|
-| **Doc 1: Reference.** Design-engineer portfolio idiom: `Name / (Role)` identity, parenthesised mono section labels, single narrow column, card grid, experience rows, local-time readout | `src/components/*`, `src/styles/*` |
-| **Doc 2: Format.** Top and bottom swapped: footer → top utility bar, nav → bottom dock, sections reversed | `LAYOUT` in `src/config.js` (`invert: true`), resolved in `src/page.js` |
-| **Doc 3: Colors.** Red accent → green | `--accent*` tokens in `src/styles/tokens.css` |
-| **Doc 4: Professional / Personal.** Ships Professional; Personal loader + toggle scaffolded and **commented out** | `src/config.js`, `scripts/build.mjs`, `src/components/modeToggle.js`, `src/client/main.js`, `personal/` |
+| **Doc 1: Reference** (reverse-engineered from a mobile recording) | Per-page palettes (brand / sky blue / black / stone grey / white), full-viewport hero with one-line display name and spinning asterisk, sticky hero reveal, photo with **pixel-dissolve** transition, four-column data tables, alternating left/right statements, pointer-reactive **dash field**, striped **page transitions**, giant footer year with **odometer roll** |
+| **Doc 2: Format** (top ↔ bottom) | `LAYOUT.invert` in `src/config.js`. Every page's stack is reversed, and so is each block's internal top/bottom arrangement. The footer (year + links) now opens every page, and the nav becomes a fixed bottom bar |
+| **Doc 3: Colors** (red → green) | `--brand: #00d65b` (was `#ff0000`) in `src/styles/tokens.css`: hero, transition stripes, theme-color, favicon, OG image |
+| **Doc 4: Professional / Personal** | Ships Professional only. The Personal loader, toggle and client hook are written but **commented out**. See [`personal/README.md`](personal/README.md) |
 
-**Layout order**
+### Layout order (Document 2)
 
 ```
-Reference (invert: false)          This build (invert: true)
-─────────────────────────          ─────────────────────────
-nav                                utility bar (old footer, sticky)
-hero                               contact
-projects                           now
-experience                         experience
-now                                projects
-contact                            hero (the single <h1>)
-footer                             dock (old nav, fixed bottom)
+Reference (invert: false)                 This build (invert: true)
+──────────────────────────                ──────────────────────────
+nav (top)                                 footer: giant "20*26" → link columns
+HOME hero: meta row → name                work: table → lead + "View all projects"
+statement (dark, slides over hero)        photo (assembles from white pixels)
+photo (dissolves into white)              statement (dark, pulls away from hero)
+work: lead → table                        HOME hero: name → meta row (sticky reveal)
+footer: link columns → giant "20*26"      nav (fixed bottom bar)
 ```
 
-**UX principles applied**
+The same reversal applies on About, Projects, Contact and Privacy. DOM order always
+matches visual order, so screen-reader and keyboard order stay correct. `npm run check`
+verifies the order on every page.
 
-- **Fitts's Law.** The dock is fixed in the thumb zone, and every interactive target is ≥ 44 px. Project cards are whole-card links rather than small "view" links.
-- **Jakob's Law.** The pill dock mirrors familiar iOS tab bars and macOS docks. The utility bar keeps conventional footer content (©, socials).
-- **Visual hierarchy.** One `<h1>`, a fluid type scale (`clamp()`), muted mono labels so headings carry the weight, and green used sparingly for action and state only.
-- **Accessibility.** Skip link, landmark elements, `aria-current` on the active section, visible focus rings, AA-contrast accent in both themes, and `prefers-reduced-motion` respected. The page works fully without JavaScript.
+### UX principles
 
-> Note: The Terms of Service and Privacy Policy pages were left out. The brief
-> asks for them only when the product is commercial, SaaS or e-commerce, and
-> this is a personal portfolio that sets no cookies and runs no analytics. If you
-> add analytics, a contact form or anything that collects data, add a
-> `/privacy` page.
+- **Fitts's Law.** The nav is a fixed bottom bar in the thumb zone. Every link and button is at least 44px tall even where the type is tiny (the reference uses ~28px pills; these are enlarged). Project cards are whole-card links.
+- **Jakob's Law.** Conventional page names, a persistent nav, and a footer with links, email and ©.
+- **Visual hierarchy.** One `<h1>` per page, display type at 4–15vw against 12px UI text, and colour fields that tell you which page you're on.
+- **Legibility.** The nav bar reads the section beneath it and switches ink and background to match (light on dark, dark on light). UI text has a 12px floor. Black on brand green is about 10:1.
+- **Accessibility.** Skip link, landmarks, captioned tables, labelled form fields, `aria-live` form status, visible focus, and `prefers-reduced-motion` turns off every animation. Every page works fully without JavaScript, including the contact form via a 303 redirect plus `:target` messages.
+
+### Compliance pages
+
+The brief asks for Terms/Privacy pages only for commercial, SaaS or e-commerce
+products. This is a personal portfolio, so there are **no Terms of Service**. It does
+collect names and emails through the contact form, though, so it includes a
+professionally structured **Privacy notice** at `/privacy` (linked from the footer and
+the form, as in the reference). Fill in its TODOs. It's a template, not legal advice.
 
 ---
 
@@ -51,32 +58,35 @@ footer                             dock (old nav, fixed bottom)
 
 ```
 dev-ananta-site/
+├── api/
+│   └── contact.js             # Vercel function: validate → Turnstile (opt.) → Resend
 ├── src/
-│   ├── config.js              # identity, LAYOUT (Doc 2), MODE (Doc 4)
-│   ├── page.js                # layout resolver + HTML document shell
+│   ├── config.js              # SITE, NAV, LAYOUT (Doc 2), MODE (Doc 4)
+│   ├── page.js                # page definitions, layout inversion, HTML shell
 │   ├── content/
-│   │   └── professional.js    # all copy/data, no markup
-│   ├── components/            # pure functions → HTML strings
-│   │   ├── utilityBar.js      # old footer → top bar
-│   │   ├── contact.js
-│   │   ├── now.js
-│   │   ├── experience.js
-│   │   ├── projects.js
-│   │   ├── hero.js
-│   │   ├── dock.js            # old nav → bottom dock
-│   │   ├── modeToggle.js      # Doc 4, commented out
-│   │   └── icons.js
-│   ├── lib/html.js            # auto-escaping template tag
-│   ├── client/main.js         # theme, clock, active nav, copy, reveal
-│   └── styles/                # tokens → base → layout → components
-├── personal/                  # Doc 4, inactive Personal variant
-├── public/                    # copied as-is (favicon, og.png, robots, sitemap)
+│   │   └── professional.js    # all copy and data, no markup
+│   ├── components/
+│   │   ├── shared.js          # nav bar, footer + odometer, data table, asterisk
+│   │   ├── home.js            # hero, statement, photo, work preview
+│   │   ├── about.js           # intro + dash field, statements + experience
+│   │   ├── projects.js        # intro, image grid, table
+│   │   ├── contact.js         # form (progressive enhancement)
+│   │   ├── privacy.js         # privacy notice
+│   │   └── modeToggle.js      # Doc 4, commented out
+│   ├── lib/html.js            # auto-escaping template tag + ordered()
+│   ├── client/main.js         # transitions, nav ink, odometer, dissolve, dash field, form
+│   └── styles/                # tokens → base → layout → components → motion
+├── personal/                  # Doc 4: inactive Personal variant
+├── public/
+│   ├── fonts/                 # Inter (self-hosted, Latin subset, OFL)
+│   ├── images/                # placeholder portrait + project art (replace)
+│   └── favicon.svg, og.png, robots.txt, sitemap.xml
 ├── scripts/
 │   ├── build.mjs              # src → dist/
-│   ├── dev.mjs                # local server + rebuild on change
-│   └── check.mjs              # post-build sanity checks (used in CI)
+│   ├── dev.mjs                # local server with production headers + rebuild
+│   └── check.mjs              # post-build checks (CI)
 ├── .github/workflows/ci.yml
-├── vercel.json                # build config + security headers
+├── vercel.json                # build, security headers, function config
 ├── .env.example
 ├── LICENSE                    # MIT
 └── package.json
@@ -91,40 +101,55 @@ Requires **Node 18.17+** (20 LTS recommended). There's nothing to install.
 ```bash
 git clone https://github.com/YOUR_GITHUB_USERNAME/dev-ananta-site.git
 cd dev-ananta-site
-npm run dev        # → http://localhost:3000, rebuilds on save (refresh to see)
+npm run dev        # → http://localhost:3000
 ```
 
 | Script | What it does |
 |---|---|
-| `npm run dev` | Build, serve `dist/` on `:3000`, rebuild on change |
+| `npm run dev` | Build, serve `dist/` with production headers, rebuild on change (refresh to see edits; restart after editing components) |
 | `npm run build` | Produce the static site in `dist/` |
-| `npm run check` | Build, then verify output (1 `<h1>`, no dup ids, layout order, required files) |
+| `npm run check` | Build, then verify: one `<h1>` per page, no duplicate ids, alt text, Document 2 order, CSP hash |
 | `npm run preview` | Production build served locally |
 
-### Editing content
+The dev server doesn't run `/api/*`. To test the contact form locally, use the
+Vercel CLI: `npx vercel dev`.
 
-- **Copy, projects, experience, socials:** `src/content/professional.js` (search for `TODO`)
-- **Name, role, email, timezone:** `SITE` in `src/config.js`
-- **Accent color:** `--accent`, `--accent-ink` and `--accent-soft` in `src/styles/tokens.css`
-- **Layout order:** `LAYOUT` in `src/config.js`. Set `invert: false` for the reference order.
-- **Social preview image:** replace `public/og.png` (1200×630)
+### Make it yours
+
+| What | Where |
+|---|---|
+| Name, role, location, email | `SITE` in `src/config.js` |
+| All copy, projects, roles, socials | `src/content/professional.js` (search for `TODO`) |
+| Photo | Add `public/images/portrait.jpg` (≈1200×1500) and update `home.photo.src` |
+| Project images | `public/images/project-*.svg` → your images (4:5 crops look best) |
+| Brand colour | `--brand` in `src/styles/tokens.css` (also `themeColor` for Home in `src/page.js`) |
+| Page colours | `--about`, `--black`, `--stone`, `--dark`, `--paper` in `tokens.css` |
+| Layout direction | `LAYOUT.invert` in `src/config.js` |
+| Privacy notice | `src/components/privacy.js` |
+| Social image | `public/og.png` (1200×630) |
 
 ---
 
 ## Environment variables
 
-All optional. See `.env.example`.
+Set these in **Vercel → Project → Settings → Environment Variables**. All are optional,
+but the contact form needs the Resend pair to send email.
 
-| Variable | Default | Purpose |
+| Variable | Used by | Purpose |
 |---|---|---|
-| `SITE_URL` | `https://dev-ananta.vercel.app` | Canonical + Open Graph URLs |
-| `PORT` | `3000` | Dev server port |
-| `SITE_MODE` | *(inactive)* | Doc 4: `personal` builds the Personal variant once enabled |
-| `PERSONAL_URL` / `PROFESSIONAL_URL` | *(inactive)* | Doc 4: toggle targets for the branch strategy |
+| `SITE_URL` | build | Canonical + Open Graph URLs (default `https://dev-ananta.vercel.app`) |
+| `RESEND_API_KEY` | `api/contact.js` | Sends form messages via [Resend](https://resend.com) (free tier is plenty) |
+| `CONTACT_TO_EMAIL` | `api/contact.js` | Your inbox |
+| `CONTACT_FROM_EMAIL` | `api/contact.js` | Verified sender, e.g. `Portfolio <hello@yourdomain.com>` (defaults to Resend's test sender) |
+| `TURNSTILE_SITE_KEY` | build | Shows a Cloudflare Turnstile widget on the form |
+| `TURNSTILE_SECRET_KEY` | `api/contact.js` | Verifies the Turnstile token server-side |
+| `PORT` | dev | Dev server port (default 3000) |
+| `SITE_MODE`, `PERSONAL_URL`, `PROFESSIONAL_URL` | *(inactive)* | Document 4, see `personal/README.md` |
 
-Locally, pass them inline (`SITE_URL=http://localhost:3000 npm run build`) or use
-Node's loader: `node --env-file=.env scripts/build.mjs`. On Vercel, set them
-under **Project → Settings → Environment Variables**.
+Without `RESEND_API_KEY`, the form returns a friendly "isn't set up yet" message
+instead of failing silently. Spam protection is layered: a honeypot field, server-side
+validation and length limits, and optionally Turnstile. For rate limiting, add a Vercel
+Firewall rule on `/api/contact`.
 
 ---
 
@@ -132,15 +157,10 @@ under **Project → Settings → Environment Variables**.
 
 ```bash
 cd dev-ananta-site
-git init -b main            # skip if the repo is already initialised
-git add -A
-git commit -m "Initial commit"
-
-# Create the repo (GitHub CLI) and push:
+# The repo is already initialised with one commit on `main`.
 gh repo create dev-ananta-site --public --source=. --remote=origin --push
 
-# …or create "dev-ananta-site" on github.com (no README/license; this repo
-# already has them), then:
+# …or create an empty "dev-ananta-site" repo on github.com, then:
 git remote add origin https://github.com/YOUR_GITHUB_USERNAME/dev-ananta-site.git
 git push -u origin main
 ```
@@ -151,50 +171,46 @@ Then replace `YOUR_GITHUB_USERNAME` in `package.json` and this README.
 
 ## Deploy to Vercel (dev-ananta.vercel.app)
 
-`vercel.json` already sets the build command, output directory and headers, so
-there's nothing to configure in the dashboard.
+`vercel.json` already sets the build command, output directory, headers and function
+limits, so there's nothing to configure in the dashboard.
 
 **Dashboard**
 
-1. Go to [vercel.com/new](https://vercel.com/new) and import `dev-ananta-site` from GitHub.
-2. Set **Project Name** to `dev-ananta`. That name is what gives you `dev-ananta.vercel.app`.
-3. Leave Framework Preset as **Other**, then click **Deploy**.
+1. Go to [vercel.com/new](https://vercel.com/new) and import `dev-ananta-site`.
+2. Set **Project Name** to `dev-ananta`. That's what gives you `dev-ananta.vercel.app`.
+3. Leave Framework Preset as **Other**, add the environment variables above, then **Deploy**.
 
 **CLI**
 
 ```bash
-npm i -g vercel
-vercel link --project dev-ananta     # creates/links the project
-vercel --prod
+npx vercel link --project dev-ananta
+npx vercel env add RESEND_API_KEY      # repeat for the others
+npx vercel --prod
 ```
 
-After that, every push to `main` deploys to production and every other branch
-or PR gets a preview URL. If `dev-ananta.vercel.app` is already taken, add it
-(or a custom domain) under **Project → Settings → Domains**.
+Every push to `main` deploys to production, and every other branch or PR gets a preview
+URL. If `dev-ananta.vercel.app` is taken, assign a domain under **Settings → Domains**.
 
 ### Security headers
 
-`vercel.json` sends HSTS, `X-Content-Type-Options`, `X-Frame-Options`,
-`Referrer-Policy`, `Permissions-Policy` and a strict CSP. The CSP allows exactly
-one inline script, the pre-paint theme snippet in `src/page.js`, by its
-SHA-256 hash. **If you edit that snippet, recompute the hash:**
-
-```bash
-npm run build && node -e "const h=require('fs').readFileSync('dist/index.html','utf8').match(/<script>([\s\S]*?)<\/script>/)[1];console.log('sha256-'+require('crypto').createHash('sha256').update(h).digest('base64'))"
-```
-
-and paste it into `script-src` in `vercel.json`.
+`vercel.json` sends HSTS, `nosniff`, `X-Frame-Options: DENY`, `Referrer-Policy`,
+`Permissions-Policy` and a strict **CSP**: no inline styles, no third-party scripts
+except Cloudflare Turnstile, and exactly one inline script (the pre-paint snippet,
+`PREPAINT` in `src/page.js`) allowed by its SHA-256 hash. If you edit that snippet,
+`npm run check` will fail and print the new hash to paste into `vercel.json`.
 
 ---
 
 ## Personal mode (Document 4)
 
-Disabled by design. To turn it on, follow [`personal/README.md`](personal/README.md),
-which covers both the **folder** strategy (`/personal/` on the same deployment)
-and the **branch** strategy (a `personal` branch with its own Vercel domain).
+Disabled by design. [`personal/README.md`](personal/README.md) covers both strategies:
+**folder** (`/personal/` on the same deployment) and **branch** (a `personal` branch with
+its own Vercel domain).
 
 ---
 
-## License
+## Credits and license
 
-[MIT](LICENSE) © 2026 Anant Parikh
+- Code: [MIT](LICENSE) © 2026 Anant Parikh
+- Typeface: [Inter](https://github.com/rsms/inter) by Rasmus Andersson, SIL Open Font License 1.1 (`public/fonts/OFL.txt`)
+- Layout and interaction patterns inspired by [aryan.am](https://aryan.am). All copy and imagery here are original placeholders.

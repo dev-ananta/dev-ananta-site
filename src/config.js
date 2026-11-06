@@ -1,53 +1,59 @@
 /**
- * Site configuration — the single place to change identity, layout and mode.
- *
- * Everything here is read at BUILD time by scripts/build.mjs, so the shipped
- * site is plain static HTML (fast first paint, crawlable, no client framework).
+ * Site configuration — identity, layout inversion, colours and mode.
+ * Read at BUILD time by scripts/build.mjs; the output is static HTML.
  */
 
 export const SITE = {
   name: 'Anant Parikh',
-  shortName: 'Ananta',
-  role: 'Developer',            // rendered as "(Developer)", design-engineer style
-  handle: 'dev-ananta',
+  logo: 'dev-ananta',
+  role: 'Developer',
   url: process.env.SITE_URL || 'https://dev-ananta.vercel.app',
-  description: 'Anant Parikh — developer building thoughtful, fast, accessible software.',
+  description: 'Anant Parikh, a developer building fast, considered web experiences.',
   locale: 'en-US',
-  timezone: 'America/Chicago',  // drives the live local-time readout in the utility bar
-  email: 'hello@example.com',   // TODO: replace with your public contact address
+  location: ['Your City', 'Country'],   // TODO: shown in the home hero, two lines
+  email: 'hello@example.com',           // TODO: your public contact address
   year: new Date().getFullYear(),
+  // Cloudflare Turnstile is optional. Leave empty to skip the widget.
+  turnstileSiteKey: process.env.TURNSTILE_SITE_KEY || '',
 };
+
+/** Primary navigation (shared by the nav bar and the footer columns). */
+export const NAV = [
+  { href: '/', label: 'Home' },
+  { href: '/about', label: 'About' },
+  { href: '/projects', label: 'Projects' },
+  { href: '/contact', label: 'Work with me' },
+];
 
 /**
  * LAYOUT — Document 2 (Format)
  * ---------------------------------------------------------------------------
- * `base` is the reference order, reverse-engineered top → bottom:
+ * Every page in the reference is a vertical stack of blocks:
  *
- *   nav → hero → projects → experience → now → contact → footer
+ *   header/nav → hero → …content… → footer (links + giant "20*26")
  *
- * With `invert: true`, the order flips. What sat at the bottom moves to the
- * top and vice versa:
+ * With `invert: true`, each page's stack is reversed, and so is the internal
+ * top/bottom arrangement of each block:
+ *  - the footer (giant year first, then link columns) opens every page
+ *  - the header becomes a fixed bottom nav bar (thumb zone, Fitts's Law)
+ *  - each hero puts its big headline at the top of the viewport and its
+ *    small meta row at the bottom
  *
- *   footer (utility bar) → contact → now → experience → projects → hero → nav (dock)
- *
- * The nav becomes a fixed bottom dock. That suits Fitts's Law: on phones it
- * sits in the thumb zone and makes a large, stable target. The old footer
- * becomes a slim top utility bar (copyright, local time, socials, theme).
- *
- * Set `invert: false` to restore the reference order without touching any
- * component code.
+ * DOM order always matches visual order, so reading and tab order stay
+ * correct. Set `invert: false` to get the reference arrangement back.
  */
-export const LAYOUT = {
-  invert: true,
-  base: ['nav', 'hero', 'projects', 'experience', 'now', 'contact', 'footer'],
-};
+export const LAYOUT = { invert: true };
+
+/**
+ * THEME — Document 3 (Colors)
+ * The reference's signature red (#ff0000) is now green. The value lives in
+ * src/styles/tokens.css (--brand), and every place that used red reads it.
+ */
 
 /**
  * MODE — Document 4 (Professional / Personal)
- * ---------------------------------------------------------------------------
- * This codebase ships PROFESSIONAL mode only. Personal mode is scaffolded but
- * deliberately commented out. See scripts/build.mjs, src/components/modeToggle.js
- * and personal/README.md for the two supported strategies (folder or branch).
+ * This build ships PROFESSIONAL mode only. Personal mode is scaffolded and
+ * commented out. See personal/README.md.
  */
 export const MODE = {
   current: 'professional',

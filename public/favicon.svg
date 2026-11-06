@@ -5,5 +5,5 @@
   </style>
   <rect class="bg" width="64" height="64" rx="16"/>
   <path class="fg" d="M32 14 47 50h-7.4l-3-7.6H27.4L24.4 50H17L32 14Zm0 11.6-3 9.2h6Z"/>
-  <circle cx="49" cy="15" r="5" fill="#22a35a"/>
+  <circle cx="49" cy="15" r="5" fill="#00d65b"/>
 </svg>

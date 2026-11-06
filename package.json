@@ -1,7 +1,7 @@
 {
   "name": "dev-ananta-site",
   "version": "1.0.0",
-  "description": "Personal site for Anant Parikh: zero-dependency static build, deployed on Vercel.",
+  "description": "Portfolio for Anant Parikh: zero-dependency static build with a Vercel contact function.",
   "private": true,
   "type": "module",
   "license": "MIT",

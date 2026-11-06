@@ -1,91 +1,85 @@
-/* Layout: wrap, sections, and the inverted chrome (Document 2) */
+/* ==========================================================================
+   Layout: page themes, chrome (nav + footer) and Document 2 inversion
+   ========================================================================== */
 
-.wrap {
-  width: 100%;
-  max-width: calc(var(--wrap) + var(--gutter) * 2);
-  margin-inline: auto;
+/* Page background per theme (matches the reference page by page) */
+html[data-theme="home"]     { background: var(--paper); }
+html[data-theme="about"]    { background: var(--about); }
+html[data-theme="projects"] { background: var(--black); color: var(--ink-inv); }
+html[data-theme="contact"]  { background: var(--stone); }
+html[data-theme="legal"]    { background: var(--paper); }
+
+/* Every block stacks above the sticky home hero */
+main > * { position: relative; z-index: 1; }
+
+/* ── Nav bar ────────────────────────────────────────────────────────────── */
+.navbar {
+  --nav-bg: transparent;
+  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+  min-height: var(--nav-h);
   padding-inline: var(--gutter);
+  font-size: var(--micro);
+  color: var(--ink);
+  z-index: 50;
+  transition: color 240ms var(--ease), background-color 240ms var(--ease);
 }
+.navbar[data-ink="light"] { color: var(--ink-inv); }
 
-main { padding-block: var(--section-gap); }
-.section + .section { margin-top: var(--section-gap); }
+.navbar--top { position: absolute; inset: 0 0 auto 0; }
 
-/* When the dock sits at the bottom, reserve room so it never covers content. */
-html[data-layout="inverted"] body {
-  padding-bottom: calc(var(--dock-h) + 2rem + env(safe-area-inset-bottom));
+/* Inverted: fixed bottom bar, thumb reachable (Fitts's Law). Its background
+   matches whatever section it's over (set by JS), so text never collides. */
+.navbar--bottom {
+  position: fixed; inset: auto 0 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
+  background: color-mix(in srgb, var(--nav-bg) 88%, transparent);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  backdrop-filter: blur(10px) saturate(1.3);
+  border-top: 1px solid var(--hair);
 }
+html[data-layout="inverted"] body { padding-bottom: calc(var(--nav-h) + env(safe-area-inset-bottom)); }
 
-/* Section label: "(Selected work)", design-engineer idiom */
-.label {
-  font-family: var(--font-mono);
-  font-size: var(--step--1);
-  font-weight: 450;
-  color: var(--muted);
-  letter-spacing: 0;
-  margin-bottom: 1.25rem;
-}
-
-/* ---------- Utility bar (the old footer, now at the top) ---------- */
-.utility { border-bottom: 1px solid var(--line); }
-.utility--bottom { border-bottom: 0; border-top: 1px solid var(--line); }
-.utility--top {
-  position: sticky; top: 0; z-index: 20;
-  background: color-mix(in srgb, var(--bg) 82%, transparent);
-  -webkit-backdrop-filter: saturate(1.4) blur(12px);
-  backdrop-filter: saturate(1.4) blur(12px);
-}
-.utility__inner {
-  display: flex; align-items: center; gap: 0.5rem 1.25rem; flex-wrap: wrap;
-  min-height: 56px; font-size: var(--step--1);
-}
-.utility__id { display: flex; gap: 0.5rem; align-items: baseline; margin-right: auto; }
-.utility__name { font-weight: 600; text-decoration: none; }
-.utility__time { display: inline-flex; align-items: center; gap: 0.45rem; }
-.utility__social { display: flex; gap: 0.25rem; }
-.utility__social a {
+.navbar__logo, .navbar__links a {
   display: inline-flex; align-items: center; min-height: var(--target);
-  padding-inline: 0.5rem; color: var(--muted); text-decoration: none; border-radius: 8px;
-  transition: color var(--dur) var(--ease);
 }
-.utility__social a:hover { color: var(--fg); }
-.utility__controls { display: flex; align-items: center; gap: 0.5rem; }
+.navbar__logo { font-weight: 500; }
+.navbar__links { display: flex; gap: clamp(0.85rem, 2.4vw, 1.75rem); }
+.navbar__links a[aria-current="page"] { text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 
-@media (max-width: 560px) {
-  .utility__time { display: none; }
-  .utility__social { order: 3; width: 100%; margin-left: -0.5rem; }
+/* ── Footer ─────────────────────────────────────────────────────────────── */
+.footer {
+  display: flex; flex-direction: column; justify-content: flex-end; gap: clamp(2rem, 6vh, 4rem);
+  min-height: 82svh;
+  padding: 0 var(--gutter) 0;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: hidden;
 }
+/* Inverted: the footer opens the page, so its content hugs the top */
+.footer--top { justify-content: flex-start; padding-top: clamp(0.5rem, 2vh, 1.5rem); padding-bottom: clamp(3rem, 14vh, 8rem); }
 
-/* ---------- Dock (the old top nav, now a bottom dock) ---------- */
-.dock--bottom {
-  position: fixed; z-index: 30;
-  left: 50%; transform: translateX(-50%);
-  bottom: calc(1rem + env(safe-area-inset-bottom));
-  max-width: calc(100vw - 1.5rem);
+.footer__cols {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;
+  margin-left: calc(var(--col) * 1.25);
+  font-size: var(--micro); line-height: 1.5;
 }
-.dock--top { position: sticky; top: 0; z-index: 30; padding: 0.75rem; display: flex; justify-content: center; }
+@media (min-width: 900px) { .footer__cols { margin-left: calc(var(--col) * 2); } }
+.footer__col a { display: inline-block; padding-block: 0.15rem; }
+.footer__fine { margin-top: 1.1rem; opacity: 0.55; }
 
-.dock__list {
-  display: flex; gap: 2px; padding: 5px;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius-pill);
-  background: color-mix(in srgb, var(--bg-raised) 86%, transparent);
-  -webkit-backdrop-filter: saturate(1.4) blur(14px);
-  backdrop-filter: saturate(1.4) blur(14px);
-  box-shadow: var(--shadow);
-  overflow-x: auto; scrollbar-width: none;
+.year {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: var(--year);
+  line-height: 1;
+  letter-spacing: -0.07em;
+  font-variant-numeric: tabular-nums;
+  margin-left: -0.04em;
+  white-space: nowrap;
+  user-select: none;
 }
-.dock__list::-webkit-scrollbar { display: none; }
-
-.dock__link {
-  display: inline-flex; align-items: center; justify-content: center;
-  min-height: var(--target); min-width: var(--target);
-  padding-inline: 1rem;
-  border-radius: var(--radius-pill);
-  font-size: var(--step--1); font-weight: 500;
-  color: var(--muted); text-decoration: none; white-space: nowrap;
-  transition: color var(--dur) var(--ease), background-color var(--dur) var(--ease);
-}
-.dock__link:hover { color: var(--fg); background: var(--line); }
-.dock__link[aria-current] { color: var(--on-accent); background: var(--accent); }
-
-@media (max-width: 420px) { .dock__link { padding-inline: 0.7rem; } }
+.footer:not(.footer--top) .year { margin-bottom: -0.17em; }
+.footer--top .year { margin-top: -0.06em; }
+.year > span { display: inline-flex; align-items: center; }
+.year__star { display: inline-flex; width: 0.16em; margin-inline: 0.06em 0.09em; transform: translateY(-0.02em); }
+.year__star .asterisk { width: 100%; height: auto; }

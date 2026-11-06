@@ -1,0 +1,57 @@
+/* ==========================================================================
+   Motion. Everything here is disabled under prefers-reduced-motion.
+   ========================================================================== */
+
+/* Spinning hero asterisk */
+.asterisk--spin { animation: spin 9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Footer odometer. With no JS, each strip rests on its final digit (class d-N). */
+.odo { display: inline-block; height: 1em; overflow: hidden; vertical-align: top; }
+.odo__strip { display: flex; flex-direction: column; transform: translateY(calc(var(--d, 0) * -1em)); }
+.odo__strip > span { display: block; height: 1em; line-height: 1; }
+.d-0 { --d: 0; } .d-1 { --d: 1; } .d-2 { --d: 2; } .d-3 { --d: 3; } .d-4 { --d: 4; }
+.d-5 { --d: 5; } .d-6 { --d: 6; } .d-7 { --d: 7; } .d-8 { --d: 8; } .d-9 { --d: 9; }
+.year.is-armed .odo__strip { transform: translateY(0); transition: none; }
+.year.is-rolling .odo__strip { transition: transform 1.7s var(--ease); }
+
+/* Scroll reveal: hidden only when JS is running */
+.js .reveal { opacity: 0; transform: translateY(14px); transition: opacity 700ms var(--ease), transform 700ms var(--ease); }
+.js .reveal.is-in { opacity: 1; transform: none; }
+
+/* ── Page transition: horizontal stripes in the brand colour ──────────────
+   Reference: red bars wipe the screen between pages. Here they're green
+   (Document 3). Bars grow thinner toward the bottom, as in the recording. */
+.pt {
+  position: fixed; inset: 0; z-index: 150;
+  display: flex; flex-direction: column;
+  pointer-events: none;
+}
+.pt > i {
+  display: block; background: var(--brand);
+  transform: scaleY(0); transform-origin: top;
+  transition: transform 420ms var(--ease-io);
+}
+.pt > i:nth-child(1) { flex: 10; } .pt > i:nth-child(2) { flex: 9; }
+.pt > i:nth-child(3) { flex: 8; }  .pt > i:nth-child(4) { flex: 7; }
+.pt > i:nth-child(5) { flex: 6; }  .pt > i:nth-child(6) { flex: 5; }
+.pt > i:nth-child(7) { flex: 4; }  .pt > i:nth-child(8) { flex: 3; }
+.pt > i:nth-child(9) { flex: 2; }  .pt > i:nth-child(10) { flex: 1.5; }
+
+/* Covering (leaving a page) */
+.pt.is-cover > i { transform: scaleY(1.02); }
+/* Arriving: start covered (set before first paint), then uncover */
+html.pt-in .pt > i { transform: scaleY(1.02); transition: none; }
+html.pt-in .pt.is-reveal > i { transform: scaleY(0); transform-origin: bottom; transition: transform 520ms var(--ease-io); }
+
+.pt > i:nth-child(2) { transition-delay: 30ms; }  .pt > i:nth-child(3) { transition-delay: 60ms; }
+.pt > i:nth-child(4) { transition-delay: 90ms; }  .pt > i:nth-child(5) { transition-delay: 120ms; }
+.pt > i:nth-child(6) { transition-delay: 150ms; } .pt > i:nth-child(7) { transition-delay: 180ms; }
+.pt > i:nth-child(8) { transition-delay: 210ms; } .pt > i:nth-child(9) { transition-delay: 240ms; }
+.pt > i:nth-child(10) { transition-delay: 270ms; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; transition-delay: 0ms !important; }
+  .js .reveal { opacity: 1; transform: none; }
+  .pt { display: none; }
+}

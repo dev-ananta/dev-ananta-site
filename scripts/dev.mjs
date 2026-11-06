@@ -22,6 +22,14 @@ const TYPES = {
 
 await build();
 
+// Mirror vercel.json's global headers (CSP etc.) so local testing matches production.
+const vercelHeaders = Object.fromEntries(
+  (JSON.parse(await readFile(join(ROOT, 'vercel.json'), 'utf8')).headers || [])
+    .filter((h) => h.source === '/(.*)')
+    .flatMap((h) => h.headers.map(({ key, value }) => [key, value]))
+    .filter(([k]) => k !== 'Strict-Transport-Security'),
+);
+
 let timer;
 for (const dir of ['src', 'public']) {
   watch(join(ROOT, dir), { recursive: true }, () => {
@@ -31,6 +39,11 @@ for (const dir of ['src', 'public']) {
 }
 
 createServer(async (req, res) => {
+  if (req.url.startsWith('/api/')) {
+    // Serverless functions run on Vercel (use `vercel dev` to emulate them locally).
+    res.writeHead(503, { 'Content-Type': 'application/json' });
+    return res.end(JSON.stringify({ ok: false, error: 'API runs on Vercel. Use `vercel dev` locally' }));
+  }
   const url = new URL(req.url, 'http://x');
   let p = normalize(decodeURIComponent(url.pathname)).replace(/^(\.\.[/\\])+/, '');
   let file = join(DIST, p);
@@ -41,10 +54,10 @@ createServer(async (req, res) => {
   }
   try {
     const body = await readFile(file);
-    res.writeHead(200, { 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
+    res.writeHead(200, { ...vercelHeaders, 'Content-Type': TYPES[extname(file)] || 'application/octet-stream', 'Cache-Control': 'no-store' });
     res.end(body);
   } catch {
-    res.writeHead(404, { 'Content-Type': TYPES['.html'] });
+    res.writeHead(404, { ...vercelHeaders, 'Content-Type': TYPES['.html'] });
     res.end(await readFile(join(DIST, '404.html')));
   }
 }).listen(PORT, () => console.log(`→ http://localhost:${PORT}`));

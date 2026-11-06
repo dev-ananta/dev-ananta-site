@@ -13,7 +13,7 @@ There are two ways to turn it on later. Pick one.
 2. Uncomment the `SITE_MODE` lines in:
    - `src/config.js` (`MODE.current`)
    - `scripts/build.mjs` (the content loader)
-   - `src/components/modeToggle.js` and its usage in `src/components/utilityBar.js`
+   - `src/components/modeToggle.js`, rendered from `navBar()` in `src/components/shared.js`
    - the toggle handler in `src/client/main.js`
 3. Build both variants:
    ```bash
